@@ -49,6 +49,7 @@ dependencies {
     testImplementation(libs.ktor.server.tests)
     testImplementation(libs.testcontainers.postgresql)
     testImplementation(libs.testcontainers.junit.jupiter)
+    testImplementation("com.h2database:h2:2.2.224")
 }
 
 tasks.test {
