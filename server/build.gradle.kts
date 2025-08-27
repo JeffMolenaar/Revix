@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
     application
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 application {
@@ -54,4 +55,18 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+// Produce a runnable fat JAR with proper manifest
+tasks.shadowJar {
+    archiveBaseName.set("server")
+    archiveClassifier.set("all")
+    mergeServiceFiles()
+    manifest {
+        attributes(
+            mapOf(
+                "Main-Class" to application.mainClass.get()
+            )
+        )
+    }
 }
