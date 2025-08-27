@@ -4,8 +4,8 @@ FROM gradle:8.5-jdk17 AS build
 WORKDIR /app
 COPY . .
 
-# Build the application
-RUN gradle server:build --no-daemon
+# Build a runnable fat JAR
+RUN gradle server:shadowJar --no-daemon
 
 # Runtime stage
 FROM eclipse-temurin:17-jre-jammy
@@ -17,8 +17,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends curl postgresql-client ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the built application (use wildcard to avoid hardcoding version)
-COPY --from=build /app/server/build/libs/server-*.jar app.jar
+# Copy the shaded application JAR
+COPY --from=build /app/server/build/libs/server-*-all.jar app.jar
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
