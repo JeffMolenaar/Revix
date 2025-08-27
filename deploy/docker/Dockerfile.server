@@ -1,3 +1,4 @@
+# Build stage
 FROM gradle:8.5-jdk17 AS build
 
 WORKDIR /app
@@ -6,15 +7,18 @@ COPY . .
 # Build the application
 RUN gradle server:build --no-daemon
 
-FROM openjdk:17-jre-slim
+# Runtime stage
+FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
 
-# Install PostgreSQL client for health checks
-RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+# Install curl (used by health checks) and optional psql client
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl postgresql-client ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy the built application
-COPY --from=build /app/server/build/libs/server-1.0.0.jar app.jar
+# Copy the built application (use wildcard to avoid hardcoding version)
+COPY --from=build /app/server/build/libs/server-*.jar app.jar
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
