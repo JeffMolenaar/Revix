@@ -1,11 +1,11 @@
 # Build stage
-FROM gradle:8.5-jdk17 AS build
+FROM gradle:8.9-jdk17 AS build
 
 WORKDIR /app
 COPY . .
 
-# Build the application
-RUN gradle server:build --no-daemon
+# Build the application distribution  
+RUN gradle server:installDist --no-daemon
 
 # Runtime stage
 FROM eclipse-temurin:17-jre-jammy
@@ -17,9 +17,8 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends curl postgresql-client ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the entire application distribution
-COPY --from=build /app/server/build/distributions/server-*.tar /tmp/
-RUN cd /tmp && tar -xf server-*.tar && mv server-*/* /app/ && rm -rf /tmp/server-*
+# Copy the application distribution
+COPY --from=build /app/server/build/install/server /app
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
