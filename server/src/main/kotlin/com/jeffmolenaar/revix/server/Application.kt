@@ -2,6 +2,7 @@ package com.jeffmolenaar.revix.server
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import com.jeffmolenaar.revix.domain.HealthResponse
 import com.jeffmolenaar.revix.domain.ApiError
 import com.jeffmolenaar.revix.server.auth.AuthService
 import com.jeffmolenaar.revix.server.config.AppConfig
@@ -71,42 +72,6 @@ fun Application.module(config: AppConfig = ConfigLoader.load()) {
         }
     }
 
-    // Add basic health check that doesn't depend on database
-    routing {
-        get("/health") {
-            call.respond(mapOf("status" to "ok", "timestamp" to System.currentTimeMillis()))
-        }
-    }
-
-    // Initialize database in a try-catch block
-    try {
-        initDatabase(config)
-        
-        // Configure Koin DI only after successful database initialization
-        install(Koin) {
-            slf4jLogger()
-            modules(appModule(config))
-        }
-        
-        // Add database-dependent routes
-        configureDependentRoutes(config)
-    } catch (e: Exception) {
-        log.error("Failed to initialize database", e)
-        // Add a degraded mode route
-        routing {
-            route("/api/v1") {
-                get {
-                    call.respond(HttpStatusCode.ServiceUnavailable, ApiError(
-                        error = "service_unavailable",
-                        message = "Database is not available"
-                    ))
-                }
-            }
-        }
-    }
-}
-
-fun Application.configureDependentRoutes(config: AppConfig) {
     // Configure CORS
     install(CORS) {
         allowMethod(HttpMethod.Options)
@@ -116,6 +81,45 @@ fun Application.configureDependentRoutes(config: AppConfig) {
         allowHeader(HttpHeaders.Authorization)
         allowHeader(HttpHeaders.ContentType)
         anyHost() // @TODO: In production, configure specific hosts
+    }
+
+    // Always set up basic health endpoint first - this should NEVER fail
+    routing {
+        get("/health") {
+            try {
+                call.respond(HealthResponse("ok", System.currentTimeMillis()))
+            } catch (e: Exception) {
+                // If even this fails, fall back to plain text
+                call.application.log.error("Health endpoint failed", e)
+                call.respondText(
+                    """{"error":"health_check_failed","message":"Health check failed"}""",
+                    ContentType.Application.Json,
+                    HttpStatusCode.InternalServerError
+                )
+            }
+        }
+    }
+
+    // Try to initialize database and set up full application
+    try {
+        val databaseInitialized = initDatabaseSafely(config)
+        if (databaseInitialized) {
+            setupFullApplication(config)
+        } else {
+            setupDegradedMode()
+        }
+    } catch (e: Exception) {
+        // Log the error but continue with degraded mode
+        log.error("Failed to initialize full application", e)
+        setupDegradedMode()
+    }
+}
+
+private fun Application.setupFullApplication(config: AppConfig) {
+    // Configure Koin DI
+    install(Koin) {
+        slf4jLogger()
+        modules(appModule(config))
     }
     
     // Configure JWT authentication
@@ -144,8 +148,8 @@ fun Application.configureDependentRoutes(config: AppConfig) {
         }
     }
     
+    // Add full application routes
     routing {
-        // Public routes
         route("/api/v1") {
             authRoutes()
             
@@ -168,21 +172,42 @@ fun Application.configureDependentRoutes(config: AppConfig) {
     }
 }
 
-fun initDatabase(config: AppConfig) {
-    // Connect to database
-    Database.connect(
-        url = config.database.url,
-        driver = config.database.driver,
-        user = config.database.user,
-        password = config.database.password
-    )
-    
-    // Run migrations
-    val flyway = Flyway.configure()
-        .dataSource(config.database.url, config.database.user, config.database.password)
-        .load()
-    
-    flyway.migrate()
+private fun Application.setupDegradedMode() {
+    // Add degraded mode routes
+    routing {
+        route("/api/v1") {
+            get {
+                call.respond(HttpStatusCode.ServiceUnavailable, ApiError(
+                    error = "service_unavailable",
+                    message = "Database is not available"
+                ))
+            }
+        }
+    }
+}
+
+fun initDatabaseSafely(config: AppConfig): Boolean {
+    return try {
+        // Connect to database
+        Database.connect(
+            url = config.database.url,
+            driver = config.database.driver,
+            user = config.database.user,
+            password = config.database.password
+        )
+        
+        // Run migrations
+        val flyway = Flyway.configure()
+            .dataSource(config.database.url, config.database.user, config.database.password)
+            .load()
+        
+        flyway.migrate()
+        true
+    } catch (e: Exception) {
+        // Log the error but don't propagate it
+        println("Database initialization failed: ${e.message}")
+        false
+    }
 }
 
 fun appModule(config: AppConfig) = module {

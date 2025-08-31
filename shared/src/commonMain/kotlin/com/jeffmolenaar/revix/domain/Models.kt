@@ -206,3 +206,9 @@ data class ApiError(
     val message: String,
     val details: Map<String, String>? = null
 )
+
+@Serializable
+data class HealthResponse(
+    val status: String,
+    val timestamp: Long
+)
