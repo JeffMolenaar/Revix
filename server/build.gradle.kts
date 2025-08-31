@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.kotlin.serialization)
     application
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    // id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 application {
@@ -58,6 +58,7 @@ tasks.test {
 }
 
 // Produce a runnable fat JAR with proper manifest
+/*
 tasks.shadowJar {
     archiveBaseName.set("server")
     archiveClassifier.set("all")
@@ -70,3 +71,4 @@ tasks.shadowJar {
         )
     }
 }
+*/
