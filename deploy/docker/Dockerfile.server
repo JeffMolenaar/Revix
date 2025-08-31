@@ -1,11 +1,12 @@
 # Build stage
-FROM gradle:8.5-jdk17 AS build
+FROM eclipse-temurin:17-jdk-jammy AS build
 
 WORKDIR /app
 COPY . .
-
+# Ensure wrapper is executable
+RUN chmod +x ./gradlew
 # Build a runnable fat JAR
-RUN gradle server:shadowJar --no-daemon
+RUN ./gradlew server:shadowJar --no-daemon
 
 # Runtime stage
 FROM eclipse-temurin:17-jre-jammy
