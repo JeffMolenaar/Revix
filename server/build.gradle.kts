@@ -11,7 +11,7 @@ application {
 
 dependencies {
     implementation(project(":shared"))
-    
+
     // Ktor Server
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)
@@ -22,7 +22,7 @@ dependencies {
     implementation(libs.ktor.server.cors)
     implementation(libs.ktor.server.call.logging)
     implementation(libs.ktor.server.status.pages)
-    
+
     // Database
     implementation(libs.exposed.core)
     implementation(libs.exposed.dao)
@@ -31,19 +31,19 @@ dependencies {
     implementation(libs.postgres)
     implementation(libs.flyway.core)
     implementation(libs.flyway.database.postgresql)
-    
+
     // DI
     implementation(libs.koin.ktor)
     implementation(libs.koin.logger.slf4j)
-    
+
     // Crypto & Auth
     implementation(libs.bcrypt)
     implementation(libs.jwt)
-    
+
     // Logging
     implementation(libs.slf4j.api)
     implementation(libs.logback.classic)
-    
+
     // Testing
     testImplementation(libs.kotlin.test)
     testImplementation(libs.junit.jupiter)
@@ -63,10 +63,6 @@ tasks.shadowJar {
     archiveClassifier.set("all")
     mergeServiceFiles()
     manifest {
-        attributes(
-            mapOf(
-                "Main-Class" to application.mainClass.get()
-            )
-        )
+        attributes("Main-Class" to application.mainClass.get())
     }
 }
