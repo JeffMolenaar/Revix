@@ -197,12 +197,32 @@ private fun Application.setupFullApplication(config: AppConfig) {
 private fun Application.setupDegradedMode() {
     // Add degraded mode routes
     routing {
+        // API routes return service unavailable
         route("/api/v1") {
             get {
                 call.respond(HttpStatusCode.ServiceUnavailable, ApiError(
                     error = "service_unavailable",
                     message = "Database is not available"
                 ))
+            }
+        }
+        
+        // Still serve the web frontend in degraded mode
+        staticResources("/static", "static")
+        staticResources("/css", "static/css")
+        staticResources("/js", "static/js")
+        staticResources("/images", "static/images")
+        
+        // Serve index.html for root and SPA routes
+        get("/") {
+            call.respondFile(File(this@setupDegradedMode.javaClass.classLoader.getResource("static/index.html")?.toURI() ?: throw IllegalStateException("index.html not found")))
+        }
+        
+        get("/{path...}") {
+            val path = call.parameters.getAll("path")?.joinToString("/") ?: ""
+            if (!path.startsWith("api") && !path.startsWith("health") && !path.startsWith("static") && 
+                !path.startsWith("css") && !path.startsWith("js") && !path.startsWith("images")) {
+                call.respondFile(File(this@setupDegradedMode.javaClass.classLoader.getResource("static/index.html")?.toURI() ?: throw IllegalStateException("index.html not found")))
             }
         }
     }
