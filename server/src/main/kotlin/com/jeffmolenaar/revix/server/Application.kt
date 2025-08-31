@@ -38,16 +38,7 @@ fun main() {
 }
 
 fun Application.module(config: AppConfig = ConfigLoader.load()) {
-    // Initialize database
-    initDatabase(config)
-    
-    // Configure Koin DI
-    install(Koin) {
-        slf4jLogger()
-        modules(appModule(config))
-    }
-    
-    // Configure serialization
+    // Configure serialization first to handle responses properly
     install(ContentNegotiation) {
         json(Json {
             prettyPrint = true
@@ -55,7 +46,67 @@ fun Application.module(config: AppConfig = ConfigLoader.load()) {
             ignoreUnknownKeys = true
         })
     }
-    
+
+    // Configure status pages for error handling
+    install(StatusPages) {
+        exception<Throwable> { call, cause ->
+            call.application.log.error("Unhandled exception", cause)
+            call.respond(
+                HttpStatusCode.InternalServerError,
+                ApiError(
+                    error = "internal_error",
+                    message = "An unexpected error occurred"
+                )
+            )
+        }
+        
+        status(HttpStatusCode.NotFound) { call, _ ->
+            call.respond(
+                HttpStatusCode.NotFound,
+                ApiError(
+                    error = "not_found",
+                    message = "The requested resource was not found"
+                )
+            )
+        }
+    }
+
+    // Add basic health check that doesn't depend on database
+    routing {
+        get("/health") {
+            call.respond(mapOf("status" to "ok", "timestamp" to System.currentTimeMillis()))
+        }
+    }
+
+    // Initialize database in a try-catch block
+    try {
+        initDatabase(config)
+        
+        // Configure Koin DI only after successful database initialization
+        install(Koin) {
+            slf4jLogger()
+            modules(appModule(config))
+        }
+        
+        // Add database-dependent routes
+        configureDependentRoutes(config)
+    } catch (e: Exception) {
+        log.error("Failed to initialize database", e)
+        // Add a degraded mode route
+        routing {
+            route("/api/v1") {
+                get {
+                    call.respond(HttpStatusCode.ServiceUnavailable, ApiError(
+                        error = "service_unavailable",
+                        message = "Database is not available"
+                    ))
+                }
+            }
+        }
+    }
+}
+
+fun Application.configureDependentRoutes(config: AppConfig) {
     // Configure CORS
     install(CORS) {
         allowMethod(HttpMethod.Options)
@@ -93,37 +144,7 @@ fun Application.module(config: AppConfig = ConfigLoader.load()) {
         }
     }
     
-    // Configure status pages for error handling
-    install(StatusPages) {
-        exception<Throwable> { call, cause ->
-            call.application.log.error("Unhandled exception", cause)
-            call.respond(
-                HttpStatusCode.InternalServerError,
-                ApiError(
-                    error = "internal_error",
-                    message = "An unexpected error occurred"
-                )
-            )
-        }
-        
-        status(HttpStatusCode.NotFound) { call, _ ->
-            call.respond(
-                HttpStatusCode.NotFound,
-                ApiError(
-                    error = "not_found",
-                    message = "The requested resource was not found"
-                )
-            )
-        }
-    }
-    
-    // Configure routing
     routing {
-        // Health check
-        get("/health") {
-            call.respond(mapOf("status" to "ok", "timestamp" to System.currentTimeMillis()))
-        }
-        
         // Public routes
         route("/api/v1") {
             authRoutes()
