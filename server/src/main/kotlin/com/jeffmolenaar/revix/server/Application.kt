@@ -20,12 +20,14 @@ import io.ktor.server.netty.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
 import org.flywaydb.core.Flyway
 import org.jetbrains.exposed.sql.Database
+import java.io.File
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -150,6 +152,7 @@ private fun Application.setupFullApplication(config: AppConfig) {
     
     // Add full application routes
     routing {
+        // API routes
         route("/api/v1") {
             authRoutes()
             
@@ -169,18 +172,57 @@ private fun Application.setupFullApplication(config: AppConfig) {
                 }
             }
         }
+        
+        // Static web assets
+        staticResources("/static", "static")
+        staticResources("/css", "static/css")
+        staticResources("/js", "static/js")
+        staticResources("/images", "static/images")
+        
+        // Serve index.html for root and SPA routes
+        get("/") {
+            call.respondFile(File(this@setupFullApplication.javaClass.classLoader.getResource("static/index.html")?.toURI() ?: throw IllegalStateException("index.html not found")))
+        }
+        
+        get("/{path...}") {
+            val path = call.parameters.getAll("path")?.joinToString("/") ?: ""
+            if (!path.startsWith("api") && !path.startsWith("health") && !path.startsWith("static") && 
+                !path.startsWith("css") && !path.startsWith("js") && !path.startsWith("images")) {
+                call.respondFile(File(this@setupFullApplication.javaClass.classLoader.getResource("static/index.html")?.toURI() ?: throw IllegalStateException("index.html not found")))
+            }
+        }
     }
 }
 
 private fun Application.setupDegradedMode() {
     // Add degraded mode routes
     routing {
+        // API routes return service unavailable
         route("/api/v1") {
             get {
                 call.respond(HttpStatusCode.ServiceUnavailable, ApiError(
                     error = "service_unavailable",
                     message = "Database is not available"
                 ))
+            }
+        }
+        
+        // Still serve the web frontend in degraded mode
+        staticResources("/static", "static")
+        staticResources("/css", "static/css")
+        staticResources("/js", "static/js")
+        staticResources("/images", "static/images")
+        
+        // Serve index.html for root and SPA routes
+        get("/") {
+            call.respondFile(File(this@setupDegradedMode.javaClass.classLoader.getResource("static/index.html")?.toURI() ?: throw IllegalStateException("index.html not found")))
+        }
+        
+        get("/{path...}") {
+            val path = call.parameters.getAll("path")?.joinToString("/") ?: ""
+            if (!path.startsWith("api") && !path.startsWith("health") && !path.startsWith("static") && 
+                !path.startsWith("css") && !path.startsWith("js") && !path.startsWith("images")) {
+                call.respondFile(File(this@setupDegradedMode.javaClass.classLoader.getResource("static/index.html")?.toURI() ?: throw IllegalStateException("index.html not found")))
             }
         }
     }

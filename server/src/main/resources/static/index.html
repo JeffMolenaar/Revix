@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revix - Car Maintenance Tracker</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Navigation -->
+        <nav class="navbar" id="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <i class="fas fa-car"></i>
+                    <span>Revix</span>
+                </div>
+                <div class="nav-menu" id="nav-menu">
+                    <a href="#dashboard" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                    <a href="#vehicles" class="nav-link">
+                        <i class="fas fa-car"></i>
+                        Vehicles
+                    </a>
+                    <a href="#parts" class="nav-link">
+                        <i class="fas fa-cogs"></i>
+                        Parts
+                    </a>
+                    <a href="#maintenance" class="nav-link">
+                        <i class="fas fa-wrench"></i>
+                        Maintenance
+                    </a>
+                    <a href="#tags" class="nav-link">
+                        <i class="fas fa-tags"></i>
+                        Tags
+                    </a>
+                </div>
+                <div class="nav-user" id="nav-user">
+                    <span class="user-name" id="user-name">Loading...</span>
+                    <button class="btn-logout" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+                <div class="nav-toggle" id="nav-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content" id="main-content">
+            <!-- Auth Screen (shown when not logged in) -->
+            <div class="auth-container" id="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h1><i class="fas fa-car"></i> Revix</h1>
+                        <p>Self-hosted Car Maintenance Tracking</p>
+                    </div>
+                    
+                    <!-- Login Form -->
+                    <form class="auth-form" id="login-form">
+                        <h2>Sign In</h2>
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Sign In
+                        </button>
+                        <p class="auth-switch">
+                            Don't have an account? 
+                            <a href="#" onclick="showRegister()">Sign up</a>
+                        </p>
+                    </form>
+                    
+                    <!-- Register Form -->
+                    <form class="auth-form hidden" id="register-form">
+                        <h2>Create Account</h2>
+                        <div class="form-group">
+                            <label for="register-name">Full Name</label>
+                            <input type="text" id="register-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email">Email</label>
+                            <input type="email" id="register-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password">Password</label>
+                            <input type="password" id="register-password" required minlength="6">
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i>
+                            Create Account
+                        </button>
+                        <p class="auth-switch">
+                            Already have an account? 
+                            <a href="#" onclick="showLogin()">Sign in</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+
+            <!-- App Content (shown when logged in) -->
+            <div class="app-container hidden" id="app-container">
+                <!-- Dashboard -->
+                <section class="content-section" id="dashboard-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-car"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="vehicles-count">0</h3>
+                                <p>Vehicles</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="parts-count">0</h3>
+                                <p>Parts</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-wrench"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="maintenance-count">0</h3>
+                                <p>Maintenance Records</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3 id="tags-count">0</h3>
+                                <p>Tags</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recent-activity">
+                        <h3>Recent Maintenance</h3>
+                        <div class="activity-list" id="recent-maintenance">
+                            <p class="empty-state">No recent maintenance records</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Vehicles Section -->
+                <section class="content-section hidden" id="vehicles-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-car"></i> Vehicles</h2>
+                        <button class="btn btn-primary" onclick="showAddVehicleModal()">
+                            <i class="fas fa-plus"></i>
+                            Add Vehicle
+                        </button>
+                    </div>
+                    <div class="vehicles-grid" id="vehicles-grid">
+                        <p class="empty-state">No vehicles added yet</p>
+                    </div>
+                </section>
+
+                <!-- Parts Section -->
+                <section class="content-section hidden" id="parts-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-cogs"></i> Parts</h2>
+                        <button class="btn btn-primary" onclick="showAddPartModal()">
+                            <i class="fas fa-plus"></i>
+                            Add Part
+                        </button>
+                    </div>
+                    <div class="parts-filters">
+                        <input type="text" id="parts-search" placeholder="Search parts..." class="search-input">
+                        <select id="parts-tag-filter" class="filter-select">
+                            <option value="">All Tags</option>
+                        </select>
+                    </div>
+                    <div class="parts-grid" id="parts-grid">
+                        <p class="empty-state">No parts added yet</p>
+                    </div>
+                </section>
+
+                <!-- Maintenance Section -->
+                <section class="content-section hidden" id="maintenance-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-wrench"></i> Maintenance Records</h2>
+                        <select id="maintenance-vehicle-filter" class="filter-select">
+                            <option value="">All Vehicles</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="showAddMaintenanceModal()">
+                            <i class="fas fa-plus"></i>
+                            Add Record
+                        </button>
+                    </div>
+                    <div class="maintenance-list" id="maintenance-list">
+                        <p class="empty-state">No maintenance records yet</p>
+                    </div>
+                </section>
+
+                <!-- Tags Section -->
+                <section class="content-section hidden" id="tags-section">
+                    <div class="section-header">
+                        <h2><i class="fas fa-tags"></i> Tags</h2>
+                        <button class="btn btn-primary" onclick="showAddTagModal()">
+                            <i class="fas fa-plus"></i>
+                            Add Tag
+                        </button>
+                    </div>
+                    <div class="tags-grid" id="tags-grid">
+                        <p class="empty-state">No tags created yet</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+        <div id="modal-content" class="modal-content">
+            <!-- Modal content will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="loading hidden">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
