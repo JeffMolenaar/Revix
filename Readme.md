@@ -23,11 +23,20 @@ Revix is a comprehensive, self-hosted platform for tracking vehicle maintenance 
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### Ubuntu Server LTS 24.04 (Automated Installation)
+```bash
+# One-command installation (recommended for Ubuntu servers)
+curl -fsSL https://raw.githubusercontent.com/JeffMolenaar/Revix/main/install-ubuntu.sh | sudo bash
+```
+
+See [INSTALL-UBUNTU.md](INSTALL-UBUNTU.md) for detailed Ubuntu installation guide.
+
+### Manual Installation (Any Platform)
+#### Prerequisites
 - Docker and Docker Compose
 - 2GB+ available RAM
 
-### Installation
+#### Installation Steps
 ```bash
 # Clone the repository
 git clone https://github.com/JeffMolenaar/Revix.git
