@@ -1,4 +1,6 @@
-# Runtime stage
+# Dockerfile for Revix server
+# For convenience, this supports both pre-built and build-from-source approaches
+
 FROM eclipse-temurin:17-jre-jammy
 
 WORKDIR /app
@@ -8,19 +10,27 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends curl postgresql-client ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the application distribution from local build
-# Note: Run './build.sh' or './gradlew server:installDist' before building this image
+# Copy application files
 COPY . /tmp/check
+
+# Try to use pre-built distribution, with helpful error message if not found
 RUN if [ ! -d "/tmp/check/server/build/install/server" ]; then \
         echo ""; \
         echo "❌ ERROR: Application distribution not found!"; \
         echo ""; \
-        echo "You need to build the application first:"; \
-        echo "  ./build.sh"; \
-        echo "  OR"; \
-        echo "  ./gradlew server:installDist"; \
+        echo "The server needs to be built before creating the Docker image."; \
         echo ""; \
-        echo "Then run: docker compose build server"; \
+        echo "Quick fix:"; \
+        echo "  cd /path/to/Revix"; \
+        echo "  ./gradlew server:installDist"; \
+        echo "  cd deploy/docker"; \
+        echo "  docker compose build server"; \
+        echo ""; \
+        echo "Or use the build script that does everything:"; \
+        echo "  ./build.sh"; \
+        echo ""; \
+        echo "Alternatively, use the multistage build:"; \
+        echo "  docker build -f Dockerfile.server.multistage -t revix-server ../.."; \
         echo ""; \
         exit 1; \
     fi && \
