@@ -181,14 +181,14 @@ private fun Application.setupFullApplication(config: AppConfig) {
         
         // Serve index.html for root and SPA routes
         get("/") {
-            call.respondFile(File(this@setupFullApplication.javaClass.classLoader.getResource("static/index.html")?.toURI() ?: throw IllegalStateException("index.html not found")))
+            call.respondRedirect("/static/index.html", permanent = false)
         }
         
         get("/{path...}") {
             val path = call.parameters.getAll("path")?.joinToString("/") ?: ""
             if (!path.startsWith("api") && !path.startsWith("health") && !path.startsWith("static") && 
                 !path.startsWith("css") && !path.startsWith("js") && !path.startsWith("images")) {
-                call.respondFile(File(this@setupFullApplication.javaClass.classLoader.getResource("static/index.html")?.toURI() ?: throw IllegalStateException("index.html not found")))
+                call.respondRedirect("/static/index.html", permanent = false)
             }
         }
     }
@@ -215,14 +215,14 @@ private fun Application.setupDegradedMode() {
         
         // Serve index.html for root and SPA routes
         get("/") {
-            call.respondFile(File(this@setupDegradedMode.javaClass.classLoader.getResource("static/index.html")?.toURI() ?: throw IllegalStateException("index.html not found")))
+            call.respondRedirect("/static/index.html", permanent = false)
         }
         
         get("/{path...}") {
             val path = call.parameters.getAll("path")?.joinToString("/") ?: ""
             if (!path.startsWith("api") && !path.startsWith("health") && !path.startsWith("static") && 
                 !path.startsWith("css") && !path.startsWith("js") && !path.startsWith("images")) {
-                call.respondFile(File(this@setupDegradedMode.javaClass.classLoader.getResource("static/index.html")?.toURI() ?: throw IllegalStateException("index.html not found")))
+                call.respondRedirect("/static/index.html", permanent = false)
             }
         }
     }
