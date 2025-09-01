@@ -10,6 +10,7 @@ WORKDIR /build
 # Install dependencies and update CA certificates
 RUN apt-get update && \
     apt-get install -y ca-certificates && \
+    update-ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy gradle wrapper and project files first for better layer caching
@@ -24,6 +25,7 @@ COPY shared shared/
 COPY server server/
 
 # Build the application
+ENV GRADLE_OPTS="-Dorg.gradle.daemon=false"
 RUN ./gradlew server:installDist --no-daemon
 
 # Runtime stage

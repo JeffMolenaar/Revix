@@ -10,7 +10,22 @@ RUN apt-get update \
 
 # Copy the application distribution from local build
 # Note: Run './build.sh' or './gradlew server:installDist' before building this image
-COPY server/build/install/server /app
+COPY . /tmp/check
+RUN if [ ! -d "/tmp/check/server/build/install/server" ]; then \
+        echo ""; \
+        echo "❌ ERROR: Application distribution not found!"; \
+        echo ""; \
+        echo "You need to build the application first:"; \
+        echo "  ./build.sh"; \
+        echo "  OR"; \
+        echo "  ./gradlew server:installDist"; \
+        echo ""; \
+        echo "Then run: docker compose build server"; \
+        echo ""; \
+        exit 1; \
+    fi && \
+    cp -r /tmp/check/server/build/install/server /app && \
+    rm -rf /tmp/check
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
