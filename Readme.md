@@ -33,9 +33,8 @@ Revix is a comprehensive, self-hosted platform for tracking vehicle maintenance 
 git clone https://github.com/JeffMolenaar/Revix.git
 cd Revix
 
-# Start with Docker Compose
-cd deploy/docker
-docker-compose up -d
+# Build and start with Docker Compose
+./build.sh
 
 # Verify the installation
 curl http://localhost:8080/health

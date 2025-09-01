@@ -9,6 +9,7 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the application distribution from local build
+# Note: Run './build.sh' or './gradlew server:installDist' before building this image
 COPY server/build/install/server /app
 
 # Health check

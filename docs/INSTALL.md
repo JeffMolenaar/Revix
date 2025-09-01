@@ -14,10 +14,15 @@ git clone https://github.com/JeffMolenaar/Revix.git
 cd Revix
 ```
 
-### 2. Start the Services
+### 2. Build and Start the Services
 ```bash
+# Option 1: Use the build script (recommended)
+./build.sh
+
+# Option 2: Manual build
+./gradlew server:installDist
 cd deploy/docker
-docker-compose up -d
+docker compose up -d
 ```
 
 This will start:

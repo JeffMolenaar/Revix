@@ -1,0 +1,31 @@
+# Build artifacts (but keep server/build/install/server for Docker)
+shared/build/
+.gradle/
+
+# IDE files
+**/.idea/
+**/.vscode/
+**/*.iml
+
+# OS files
+**/.DS_Store
+**/Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
+deploy/docker/Dockerfile*
+deploy/docker/docker-compose*.yml
+
+# Documentation
+docs/
+*.md
+
+# Environment files
+.env*
+
+# Temporary files
+*.tmp
+*.log
