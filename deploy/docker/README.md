@@ -14,6 +14,22 @@ This script will:
 2. Build the Docker image 
 3. Provide instructions for starting the services
 
+## Common Issue: "Application distribution not found"
+
+If you run `docker compose build server` directly and get an error about "Application distribution not found", you need to build the application first:
+
+```bash
+# Quick fix - from repository root:
+./gradlew server:installDist
+cd deploy/docker
+docker compose build server
+```
+
+Or use the build script which handles everything:
+```bash
+./build.sh
+```
+
 ## Manual Build Process
 
 If you prefer to run the steps manually:
