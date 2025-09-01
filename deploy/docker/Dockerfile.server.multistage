@@ -1,32 +1,30 @@
-# Multi-stage build Dockerfile (alternative)
-# This version builds the application inside Docker
-# Use this if you prefer a fully containerized build process
+# Multi-stage build Dockerfile 
+# This version builds the application inside Docker completely from scratch
 
 # Build stage
 FROM eclipse-temurin:17-jdk-jammy AS build
 
 WORKDIR /build
 
-# Install dependencies and update CA certificates
+# Install dependencies including gradle
 RUN apt-get update && \
-    apt-get install -y ca-certificates && \
-    update-ca-certificates && \
+    apt-get install -y ca-certificates wget unzip && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy gradle wrapper and project files first for better layer caching
-COPY gradle gradle/
-COPY gradlew gradlew.bat build.gradle.kts settings.gradle.kts ./
-
-# Make gradlew executable
-RUN chmod +x gradlew
+# Install Gradle manually to avoid SSL issues with wrapper
+RUN wget -q https://services.gradle.org/distributions/gradle-8.9-bin.zip -O gradle.zip || \
+    (echo "Gradle download failed, trying HTTP..." && \
+     wget -q --no-check-certificate https://services.gradle.org/distributions/gradle-8.9-bin.zip -O gradle.zip) && \
+    unzip -q gradle.zip && \
+    mv gradle-8.9 /opt/gradle && \
+    rm gradle.zip
+ENV PATH="/opt/gradle/bin:${PATH}"
 
 # Copy source code
-COPY shared shared/
-COPY server server/
+COPY . .
 
-# Build the application
-ENV GRADLE_OPTS="-Dorg.gradle.daemon=false"
-RUN ./gradlew server:installDist --no-daemon
+# Build the application using system gradle
+RUN gradle server:installDist --no-daemon
 
 # Runtime stage
 FROM eclipse-temurin:17-jre-jammy
