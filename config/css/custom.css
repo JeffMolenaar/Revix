@@ -61,4 +61,36 @@ body {
  * ==============================
  */
 
+/* Enhanced maintenance display styling */
+.maintenance-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.vehicle-info {
+    font-weight: 600;
+    color: var(--primary-color, #2563eb);
+    font-size: 0.95em;
+}
+
+.maintenance-desc {
+    font-size: 0.9em;
+    color: var(--text-secondary, #6b7280);
+}
+
+.maintenance-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.maintenance-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
 /* Your custom CSS goes here */
