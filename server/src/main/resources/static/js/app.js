@@ -415,6 +415,105 @@ async function addVehicle() {
     }
 }
 
+function showEditVehicleModal(vehicleId) {
+    const vehicle = appData.vehicles.find(v => v.id === vehicleId);
+    if (!vehicle) {
+        showToast('Vehicle not found', 'error');
+        return;
+    }
+    
+    const content = `
+        <div class="modal-header">
+            <h3>Edit Vehicle</h3>
+            <button class="modal-close" onclick="hideModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="edit-vehicle-form">
+                <div class="form-group">
+                    <label for="edit-vehicle-manufacturer">Manufacturer *</label>
+                    <input type="text" id="edit-vehicle-manufacturer" required value="${vehicle.manufacturer}">
+                </div>
+                <div class="form-group">
+                    <label for="edit-vehicle-model">Model *</label>
+                    <input type="text" id="edit-vehicle-model" required value="${vehicle.model}">
+                </div>
+                <div class="form-group">
+                    <label for="edit-vehicle-license-plate">License Plate</label>
+                    <input type="text" id="edit-vehicle-license-plate" value="${vehicle.licensePlate || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="edit-vehicle-vin">VIN</label>
+                    <input type="text" id="edit-vehicle-vin" value="${vehicle.vin || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="edit-vehicle-build-year">Build Year</label>
+                    <input type="number" id="edit-vehicle-build-year" min="1900" max="2030" value="${vehicle.buildYear || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="edit-vehicle-fuel-type">Fuel Type</label>
+                    <select id="edit-vehicle-fuel-type">
+                        <option value="">Select fuel type</option>
+                        <option value="Gasoline" ${vehicle.fuelType === 'Gasoline' ? 'selected' : ''}>Gasoline</option>
+                        <option value="Diesel" ${vehicle.fuelType === 'Diesel' ? 'selected' : ''}>Diesel</option>
+                        <option value="Electric" ${vehicle.fuelType === 'Electric' ? 'selected' : ''}>Electric</option>
+                        <option value="Hybrid" ${vehicle.fuelType === 'Hybrid' ? 'selected' : ''}>Hybrid</option>
+                        <option value="LPG" ${vehicle.fuelType === 'LPG' ? 'selected' : ''}>LPG</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-vehicle-odo-unit">Odometer Unit</label>
+                    <select id="edit-vehicle-odo-unit">
+                        <option value="KM" ${vehicle.odoUnit === 'KM' ? 'selected' : ''}>Kilometers</option>
+                        <option value="MI" ${vehicle.odoUnit === 'MI' ? 'selected' : ''}>Miles</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-vehicle-current-odo">Current Odometer Reading</label>
+                    <input type="number" id="edit-vehicle-current-odo" min="0" value="${vehicle.currentOdo || ''}">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="hideModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="updateVehicle('${vehicleId}')">Update Vehicle</button>
+        </div>
+    `;
+    showModal(content);
+}
+
+async function updateVehicle(vehicleId) {
+    const vehicleData = {
+        manufacturer: document.getElementById('edit-vehicle-manufacturer').value,
+        model: document.getElementById('edit-vehicle-model').value,
+        licensePlate: document.getElementById('edit-vehicle-license-plate').value || null,
+        vin: document.getElementById('edit-vehicle-vin').value || null,
+        buildYear: document.getElementById('edit-vehicle-build-year').value ? parseInt(document.getElementById('edit-vehicle-build-year').value) : null,
+        fuelType: document.getElementById('edit-vehicle-fuel-type').value || null,
+        odoUnit: document.getElementById('edit-vehicle-odo-unit').value,
+        currentOdo: document.getElementById('edit-vehicle-current-odo').value ? parseInt(document.getElementById('edit-vehicle-current-odo').value) : null
+    };
+    
+    try {
+        showLoading();
+        await apiCall(`/vehicles/${vehicleId}`, {
+            method: 'PUT',
+            body: JSON.stringify(vehicleData)
+        });
+        
+        hideModal();
+        loadVehicles();
+        showToast('Vehicle updated successfully!');
+    } catch (error) {
+        showToast(error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+function editVehicle(vehicleId) {
+    showEditVehicleModal(vehicleId);
+}
+
 async function deleteVehicle(vehicleId) {
     if (!confirm('Are you sure you want to delete this vehicle? This action cannot be undone.')) {
         return;
@@ -734,6 +833,14 @@ function renderMaintenance() {
             <div class="maintenance-header">
                 <div class="maintenance-title">${record.title}</div>
                 <div class="maintenance-date">${formatDate(record.happenedAt)}</div>
+                <div class="maintenance-actions">
+                    <button class="btn btn-sm" onclick="editMaintenance('${record.id}')" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-error" onclick="deleteMaintenance('${record.id}')" title="Delete">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
             </div>
             <div class="maintenance-details">
                 <div class="meta-item">
@@ -776,6 +883,22 @@ function showAddMaintenanceModal() {
         return;
     }
     
+    // Load parts if not already loaded
+    if (appData.parts.length === 0) {
+        loadParts().then(() => {
+            showMaintenanceModal();
+        });
+    } else {
+        showMaintenanceModal();
+    }
+}
+
+function showMaintenanceModal() {
+    if (appData.vehicles.length === 0) {
+        showToast('Please add a vehicle first', 'warning');
+        return;
+    }
+    
     const content = `
         <div class="modal-header">
             <h3>Add Maintenance Record</h3>
@@ -808,6 +931,14 @@ function showAddMaintenanceModal() {
                     <label for="maintenance-notes">Notes</label>
                     <textarea id="maintenance-notes" rows="3"></textarea>
                 </div>
+                <div class="form-group">
+                    <label>Parts Used</label>
+                    <div id="maintenance-parts-container">
+                    </div>
+                    <button type="button" class="btn btn-sm" onclick="addMaintenancePart()">
+                        <i class="fas fa-plus"></i> Add Part
+                    </button>
+                </div>
             </form>
         </div>
         <div class="modal-footer">
@@ -831,6 +962,22 @@ async function addMaintenance() {
         items: []
     };
     
+    // Collect parts data
+    const partSelects = document.querySelectorAll('#maintenance-parts-container .part-select');
+    partSelects.forEach((select, index) => {
+        const partId = select.value;
+        const quantity = document.querySelector(`.part-quantity[data-index="${index}"]`)?.value;
+        const unit = document.querySelector(`.part-unit[data-index="${index}"]`)?.value;
+        
+        if (partId && quantity && parseFloat(quantity) > 0) {
+            maintenanceData.items.push({
+                partId: partId,
+                quantity: parseFloat(quantity),
+                unit: unit || null
+            });
+        }
+    });
+    
     try {
         showLoading();
         await apiCall(`/vehicles/${vehicleId}/maintenance`, {
@@ -845,6 +992,186 @@ async function addMaintenance() {
         showToast(error.message, 'error');
     } finally {
         hideLoading();
+    }
+}
+
+function showEditMaintenanceModal(maintenanceId) {
+    const record = appData.maintenance.find(m => m.id === maintenanceId);
+    if (!record) {
+        showToast('Maintenance record not found', 'error');
+        return;
+    }
+    
+    // Load parts if not already loaded
+    if (appData.parts.length === 0) {
+        loadParts().then(() => {
+            showEditMaintenanceModalContent(record);
+        });
+    } else {
+        showEditMaintenanceModalContent(record);
+    }
+}
+
+function showEditMaintenanceModalContent(record) {
+    const content = `
+        <div class="modal-header">
+            <h3>Edit Maintenance Record</h3>
+            <button class="modal-close" onclick="hideModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="edit-maintenance-form">
+                <div class="form-group">
+                    <label for="edit-maintenance-vehicle">Vehicle *</label>
+                    <select id="edit-maintenance-vehicle" required>
+                        ${appData.vehicles.map(vehicle => 
+                            `<option value="${vehicle.id}" ${vehicle.id === record.vehicleId ? 'selected' : ''}>${vehicle.manufacturer} ${vehicle.model} (${vehicle.licensePlate || 'No plate'})</option>`
+                        ).join('')}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="edit-maintenance-title">Title *</label>
+                    <input type="text" id="edit-maintenance-title" required placeholder="e.g., Oil Change, Brake Pads" value="${record.title}">
+                </div>
+                <div class="form-group">
+                    <label for="edit-maintenance-date">Date *</label>
+                    <input type="date" id="edit-maintenance-date" required value="${record.happenedAt}">
+                </div>
+                <div class="form-group">
+                    <label for="edit-maintenance-odo">Odometer Reading</label>
+                    <input type="number" id="edit-maintenance-odo" min="0" value="${record.odoReading || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="edit-maintenance-notes">Notes</label>
+                    <textarea id="edit-maintenance-notes" rows="3">${record.notes || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Parts Used</label>
+                    <div id="edit-maintenance-parts-container">
+                        ${(record.items || []).map((item, index) => `
+                            <div class="maintenance-part-item" data-index="${index}">
+                                <select class="part-select" data-index="${index}">
+                                    <option value="">Select a part</option>
+                                    ${appData.parts.map(part => 
+                                        `<option value="${part.id}" ${part.id === item.partId ? 'selected' : ''}>${part.name}</option>`
+                                    ).join('')}
+                                </select>
+                                <input type="number" class="part-quantity" data-index="${index}" placeholder="Qty" min="0" step="0.1" value="${item.quantity}">
+                                <input type="text" class="part-unit" data-index="${index}" placeholder="Unit" value="${item.unit || ''}">
+                                <button type="button" class="btn btn-sm btn-error" onclick="removeMaintenancePart(${index})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button type="button" class="btn btn-sm" onclick="addMaintenancePart()">
+                        <i class="fas fa-plus"></i> Add Part
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="hideModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="updateMaintenance('${record.id}')">Update Record</button>
+        </div>
+    `;
+    showModal(content);
+}
+
+async function updateMaintenance(maintenanceId) {
+    const maintenanceData = {
+        title: document.getElementById('edit-maintenance-title').value,
+        happenedAt: document.getElementById('edit-maintenance-date').value,
+        odoReading: document.getElementById('edit-maintenance-odo').value ? parseInt(document.getElementById('edit-maintenance-odo').value) : null,
+        notes: document.getElementById('edit-maintenance-notes').value || null,
+        items: []
+    };
+    
+    // Collect parts data
+    const partSelects = document.querySelectorAll('#edit-maintenance-parts-container .part-select');
+    partSelects.forEach((select, index) => {
+        const partId = select.value;
+        const quantity = document.querySelector(`.part-quantity[data-index="${index}"]`)?.value;
+        const unit = document.querySelector(`.part-unit[data-index="${index}"]`)?.value;
+        
+        if (partId && quantity && parseFloat(quantity) > 0) {
+            maintenanceData.items.push({
+                partId: partId,
+                quantity: parseFloat(quantity),
+                unit: unit || null
+            });
+        }
+    });
+    
+    try {
+        showLoading();
+        await apiCall(`/maintenance/${maintenanceId}`, {
+            method: 'PUT',
+            body: JSON.stringify(maintenanceData)
+        });
+        
+        hideModal();
+        loadMaintenance();
+        showToast('Maintenance record updated successfully!');
+    } catch (error) {
+        showToast(error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+function editMaintenance(maintenanceId) {
+    showEditMaintenanceModal(maintenanceId);
+}
+
+async function deleteMaintenance(maintenanceId) {
+    if (!confirm('Are you sure you want to delete this maintenance record? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        showLoading();
+        await apiCall(`/maintenance/${maintenanceId}`, { method: 'DELETE' });
+        loadMaintenance();
+        showToast('Maintenance record deleted successfully!');
+    } catch (error) {
+        showToast(error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+function addMaintenancePart() {
+    const container = document.getElementById('maintenance-parts-container') || document.getElementById('edit-maintenance-parts-container');
+    if (!container) return;
+    
+    const existingParts = container.querySelectorAll('.maintenance-part-item');
+    const index = existingParts.length;
+    
+    const partItem = document.createElement('div');
+    partItem.className = 'maintenance-part-item';
+    partItem.setAttribute('data-index', index);
+    
+    partItem.innerHTML = `
+        <select class="part-select" data-index="${index}">
+            <option value="">Select a part</option>
+            ${appData.parts.map(part => 
+                `<option value="${part.id}">${part.name}</option>`
+            ).join('')}
+        </select>
+        <input type="number" class="part-quantity" data-index="${index}" placeholder="Qty" min="0" step="0.1">
+        <input type="text" class="part-unit" data-index="${index}" placeholder="Unit">
+        <button type="button" class="btn btn-sm btn-error" onclick="removeMaintenancePart(${index})">
+            <i class="fas fa-trash"></i>
+        </button>
+    `;
+    
+    container.appendChild(partItem);
+}
+
+function removeMaintenancePart(index) {
+    const partItem = document.querySelector(`.maintenance-part-item[data-index="${index}"]`);
+    if (partItem) {
+        partItem.remove();
     }
 }
 
