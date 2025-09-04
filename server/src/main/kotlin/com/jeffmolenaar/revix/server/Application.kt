@@ -176,7 +176,8 @@ private fun Application.setupFullApplication(config: AppConfig) {
         
         // Custom CSS files (external, editable) - must be before static CSS resources
         get("/css/custom.css") {
-            val customCssFile = File("config/css/custom.css")
+            val workingDir = System.getProperty("user.dir")
+            val customCssFile = File("$workingDir/config/css/custom.css")
             if (customCssFile.exists()) {
                 // Prevent browser caching to ensure CSS changes are immediately visible
                 call.response.headers.append("Cache-Control", "no-cache, no-store, must-revalidate")
@@ -185,7 +186,7 @@ private fun Application.setupFullApplication(config: AppConfig) {
                 call.response.headers.append("Content-Type", "text/css")
                 call.respondFile(customCssFile)
             } else {
-                call.respond(HttpStatusCode.NotFound, "Custom CSS file not found")
+                call.respond(HttpStatusCode.NotFound, "Custom CSS file not found at: ${customCssFile.absolutePath}")
             }
         }
         
@@ -225,7 +226,8 @@ private fun Application.setupDegradedMode() {
         
         // Custom CSS files (external, editable) - must be before static CSS resources
         get("/css/custom.css") {
-            val customCssFile = File("config/css/custom.css")
+            val workingDir = System.getProperty("user.dir")
+            val customCssFile = File("$workingDir/config/css/custom.css")
             if (customCssFile.exists()) {
                 // Prevent browser caching to ensure CSS changes are immediately visible
                 call.response.headers.append("Cache-Control", "no-cache, no-store, must-revalidate")
@@ -234,7 +236,7 @@ private fun Application.setupDegradedMode() {
                 call.response.headers.append("Content-Type", "text/css")
                 call.respondFile(customCssFile)
             } else {
-                call.respond(HttpStatusCode.NotFound, "Custom CSS file not found")
+                call.respond(HttpStatusCode.NotFound, "Custom CSS file not found at: ${customCssFile.absolutePath}")
             }
         }
         staticResources("/static", "static")
