@@ -68,6 +68,25 @@ body {
  * ==============================
  */
 
+/* Example 6: Custom logo customization */
+/*
+.custom-logo {
+    display: block !important;
+    height: 40px;
+    width: auto;
+    max-width: 150px;
+}
+
+.default-logo-icon,
+.default-logo-text {
+    display: none !important;
+}
+
+.custom-logo[src=""] {
+    display: none !important;
+}
+*/
+
 /* Enhanced maintenance display styling */
 .maintenance-title {
     display: flex;
