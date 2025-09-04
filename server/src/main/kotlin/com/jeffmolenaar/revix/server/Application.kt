@@ -178,6 +178,10 @@ private fun Application.setupFullApplication(config: AppConfig) {
         get("/css/custom.css") {
             val customCssFile = File("config/css/custom.css")
             if (customCssFile.exists()) {
+                // Prevent browser caching to ensure CSS changes are immediately visible
+                call.response.headers.append("Cache-Control", "no-cache, no-store, must-revalidate")
+                call.response.headers.append("Pragma", "no-cache")
+                call.response.headers.append("Expires", "0")
                 call.respondFile(customCssFile)
             } else {
                 call.respond(HttpStatusCode.NotFound, "Custom CSS file not found")
@@ -222,6 +226,10 @@ private fun Application.setupDegradedMode() {
         get("/css/custom.css") {
             val customCssFile = File("config/css/custom.css")
             if (customCssFile.exists()) {
+                // Prevent browser caching to ensure CSS changes are immediately visible
+                call.response.headers.append("Cache-Control", "no-cache, no-store, must-revalidate")
+                call.response.headers.append("Pragma", "no-cache")
+                call.response.headers.append("Expires", "0")
                 call.respondFile(customCssFile)
             } else {
                 call.respond(HttpStatusCode.NotFound, "Custom CSS file not found")
