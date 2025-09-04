@@ -198,6 +198,38 @@ body {
 }
 ```
 
+### Custom Logo (CSS-Only)
+
+You can replace the default Revix logo with your own custom logo using only CSS - no need to modify any HTML or JavaScript files!
+
+```css
+/* Show your custom logo */
+.custom-logo {
+    display: block !important;
+    background-image: url('/static/images/your-logo.png');
+    height: 40px;
+    width: 120px;
+    max-width: 150px;
+}
+
+/* Hide the default logo elements */
+.default-logo-icon,
+.default-logo-text {
+    display: none !important;
+}
+```
+
+**Steps to add your custom logo:**
+
+1. **Upload your logo** to the `server/src/main/resources/static/images/` directory
+2. **Edit** `config/css/custom.css` and uncomment/modify the custom logo CSS
+3. **Update the path** in `background-image: url('/static/images/your-logo.png')` to point to your logo file
+4. **Adjust dimensions** (`height`, `width`, `max-width`) as needed for your logo
+5. **Refresh** your browser - changes are applied immediately!
+
+**Supported image formats:** PNG, JPG, SVG, WebP
+**Recommended size:** 40px height, any width (logo will be auto-scaled)
+
 ## Advanced Customizations
 
 ### Component-Specific Styling
