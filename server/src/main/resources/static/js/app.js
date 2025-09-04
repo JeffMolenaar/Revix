@@ -56,6 +56,12 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString();
 }
 
+function formatVehicleDisplay(vehicleDetails) {
+    const make = `${vehicleDetails.manufacturer} ${vehicleDetails.model}`;
+    const identifier = vehicleDetails.licensePlate || vehicleDetails.vin || '';
+    return identifier ? `${make} (${identifier})` : make;
+}
+
 // API Functions
 async function apiCall(endpoint, options = {}) {
     const url = `${API_BASE}${endpoint}`;
@@ -282,7 +288,10 @@ function renderRecentMaintenance(maintenance) {
     
     container.innerHTML = maintenance.map(record => `
         <div class="maintenance-item">
-            <span>${record.title}</span>
+            <div class="maintenance-item-info">
+                <div class="vehicle-info">${formatVehicleDisplay(record.vehicleDetails)}</div>
+                <div class="maintenance-desc">${record.title}</div>
+            </div>
             <span class="maintenance-date">${formatDate(record.happenedAt)}</span>
         </div>
     `).join('');
@@ -935,7 +944,13 @@ async function loadMaintenance() {
         appData.maintenance = maintenanceResults.flatMap((result, index) =>
             (result.data || []).map(record => ({
                 ...record,
-                vehicleName: `${appData.vehicles[index].manufacturer} ${appData.vehicles[index].model}`
+                vehicleName: `${appData.vehicles[index].manufacturer} ${appData.vehicles[index].model}`,
+                vehicleDetails: {
+                    manufacturer: appData.vehicles[index].manufacturer,
+                    model: appData.vehicles[index].model,
+                    licensePlate: appData.vehicles[index].licensePlate,
+                    vin: appData.vehicles[index].vin
+                }
             }))
         );
         
@@ -962,7 +977,10 @@ function renderMaintenance() {
                     <button class="maintenance-toggle-btn" title="Expand/Collapse">
                         <i class="fas fa-chevron-down"></i>
                     </button>
-                    <div class="maintenance-title">${record.title}</div>
+                    <div class="maintenance-title">
+                        <div class="vehicle-info">${formatVehicleDisplay(record.vehicleDetails)}</div>
+                        <div class="maintenance-desc">${record.title}</div>
+                    </div>
                 </div>
                 <div class="maintenance-date">${formatDate(record.happenedAt)}</div>
                 <div class="maintenance-actions" onclick="event.stopPropagation()">
