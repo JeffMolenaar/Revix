@@ -10,6 +10,7 @@ Revix is a comprehensive, self-hosted platform for tracking vehicle maintenance 
 - **Tag System**: Categorize and filter parts using a flexible tagging system
 - **Odometer Tracking**: Support for both kilometers and engine hours
 - **Multi-user Support**: Secure, per-user data isolation with JWT authentication
+- **Customizable Interface**: Easy CSS customization via external files (editable via SSH/filesystem)
 - **REST API**: Complete RESTful API for all operations
 - **Self-hosted**: Run on your own infrastructure with Docker
 

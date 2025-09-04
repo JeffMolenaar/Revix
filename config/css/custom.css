@@ -1,0 +1,64 @@
+/* 
+ * REVIX CUSTOM CSS
+ * 
+ * This file allows you to customize the appearance of your Revix installation.
+ * You can edit this file directly via SSH or any file editor.
+ * 
+ * Changes will be applied automatically after editing and restarting the server.
+ * This file has higher priority than the default styles.
+ * 
+ * EXAMPLES:
+ * ========
+ */
+
+/* Example 1: Change primary color to green */
+/*
+:root {
+    --primary-color: #16a34a;
+    --primary-dark: #15803d;
+    --primary-light: #22c55e;
+}
+*/
+
+/* Example 2: Dark theme */
+/*
+:root {
+    --background-color: #0f172a;
+    --surface-color: #1e293b;
+    --surface-hover: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --border-color: #334155;
+}
+*/
+
+/* Example 3: Custom font */
+/*
+body {
+    font-family: 'Georgia', serif;
+}
+*/
+
+/* Example 4: Larger text */
+/*
+:root {
+    --font-size-base: 1.125rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.5rem;
+}
+*/
+
+/* Example 5: Custom card styling */
+/*
+.card {
+    border-radius: 12px;
+    box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.1);
+}
+*/
+
+/* 
+ * ADD YOUR CUSTOM STYLES BELOW:
+ * ==============================
+ */
+
+/* Your custom CSS goes here */

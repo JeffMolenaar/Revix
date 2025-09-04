@@ -168,6 +168,15 @@ docker-compose exec -T db psql -U revix revix < backup.sql
 2. Verify JWT secret is set
 3. Check database migrations completed successfully
 
+## Customization
+
+### CSS Styling
+You can customize the appearance of Revix by editing CSS files. See the [CSS Customization Guide](CSS-CUSTOMIZATION.md) for detailed instructions on:
+- How to edit CSS via SSH or file system
+- Available CSS variables and theming options
+- Examples for common customizations (dark theme, colors, fonts)
+- Troubleshooting styling issues
+
 ## Support
 
 For issues and feature requests, please create an issue on the GitHub repository.
