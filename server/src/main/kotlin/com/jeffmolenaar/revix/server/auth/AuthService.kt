@@ -71,11 +71,15 @@ class AuthService(private val jwtConfig: JwtConfig) {
     }
     
     fun hashRefreshToken(refreshToken: String): String {
-        return BCrypt.withDefaults().hashToString(12, refreshToken.toCharArray())
+        // Use SHA-256 instead of BCrypt since JWT tokens are too long for BCrypt (72 byte limit)
+        // and we don't need the slowness of BCrypt for hashing already-secure JWT tokens
+        return java.security.MessageDigest.getInstance("SHA-256")
+            .digest(refreshToken.toByteArray())
+            .fold("") { str, it -> str + "%02x".format(it) }
     }
     
     fun verifyRefreshTokenHash(refreshToken: String, hash: String): Boolean {
-        return BCrypt.verifyer().verify(refreshToken.toCharArray(), hash).verified
+        return hashRefreshToken(refreshToken) == hash
     }
     
     fun getRefreshTokenExpiration(): Instant {
