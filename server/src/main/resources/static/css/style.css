@@ -898,18 +898,23 @@ body {
         position: relative;
     }
     
-    /* Reorder nav items for mobile: user first, then logo */
+    /* Position user section on the left */
     .nav-user {
         order: 1;
     }
     
+    /* Center the logo absolutely in the mobile header */
     .nav-brand {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
         order: 2;
     }
     
     .nav-toggle {
         order: 3;
         display: flex;
+        margin-left: auto;
     }
     
     .nav-menu {
