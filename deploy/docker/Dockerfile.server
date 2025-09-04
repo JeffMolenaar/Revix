@@ -34,7 +34,7 @@ RUN if [ ! -d "/tmp/check/server/build/install/server" ]; then \
         echo ""; \
         exit 1; \
     fi && \
-    cp -r /tmp/check/server/build/install/server /app && \
+    cp -r /tmp/check/server/build/install/server/* /app && \
     rm -rf /tmp/check
 
 # Health check
