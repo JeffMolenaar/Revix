@@ -174,6 +174,16 @@ private fun Application.setupFullApplication(config: AppConfig) {
             }
         }
         
+        // Custom CSS files (external, editable) - served before static resources for priority
+        get("/css/custom.css") {
+            val customCssFile = File("config/css/custom.css")
+            if (customCssFile.exists()) {
+                call.respondFile(customCssFile)
+            } else {
+                call.respond(HttpStatusCode.NotFound, "Custom CSS file not found")
+            }
+        }
+        
         // Static web assets
         staticResources("/static", "static")
         staticResources("/css", "static/css")
@@ -205,6 +215,16 @@ private fun Application.setupDegradedMode() {
                     error = "service_unavailable",
                     message = "Database is not available"
                 ))
+            }
+        }
+        
+        // Custom CSS files (external, editable) - served before static resources for priority
+        get("/css/custom.css") {
+            val customCssFile = File("config/css/custom.css")
+            if (customCssFile.exists()) {
+                call.respondFile(customCssFile)
+            } else {
+                call.respond(HttpStatusCode.NotFound, "Custom CSS file not found")
             }
         }
         
