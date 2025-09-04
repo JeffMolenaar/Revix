@@ -176,7 +176,7 @@ private fun Application.setupFullApplication(config: AppConfig) {
         
         // Custom CSS files (external, editable) - must be before static CSS resources
         get("/css/custom.css") {
-            val customCssFile = File("../config/css/custom.css")
+            val customCssFile = File("config/css/custom.css")
             if (customCssFile.exists()) {
                 // Prevent browser caching to ensure CSS changes are immediately visible
                 call.response.headers.append("Cache-Control", "no-cache, no-store, must-revalidate")
@@ -225,7 +225,7 @@ private fun Application.setupDegradedMode() {
         
         // Custom CSS files (external, editable) - must be before static CSS resources
         get("/css/custom.css") {
-            val customCssFile = File("../config/css/custom.css")
+            val customCssFile = File("config/css/custom.css")
             if (customCssFile.exists()) {
                 // Prevent browser caching to ensure CSS changes are immediately visible
                 call.response.headers.append("Cache-Control", "no-cache, no-store, must-revalidate")

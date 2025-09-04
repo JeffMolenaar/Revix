@@ -32,6 +32,8 @@ services:
       REVIX_BASE_URL: ${REVIX_BASE_URL:-http://localhost:8080}
     ports:
       - "8080:8080"
+    volumes:
+      - ../../config:/app/config
     networks:
       - revix_network
     healthcheck:
