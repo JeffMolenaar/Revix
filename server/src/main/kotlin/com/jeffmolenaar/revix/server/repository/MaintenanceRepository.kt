@@ -60,12 +60,12 @@ class MaintenanceRepository {
         val recordId = MaintenanceRecordsTable.insertAndGetId {
             it[MaintenanceRecordsTable.vehicleId] = UUID.fromString(vehicleId)
             it[MaintenanceRecordsTable.ownerId] = UUID.fromString(ownerId)
-            it[happenedAt] = request.happenedAt
-            it[odoReading] = request.odoReading
-            it[title] = request.title
-            it[notes] = request.notes
-            it[createdAt] = Clock.System.now()
-            it[updatedAt] = Clock.System.now()
+            it[MaintenanceRecordsTable.happenedAt] = request.happenedAt
+            it[MaintenanceRecordsTable.odoReading] = request.odoReading
+            it[MaintenanceRecordsTable.title] = request.title
+            it[MaintenanceRecordsTable.notes] = request.notes
+            it[MaintenanceRecordsTable.createdAt] = Clock.System.now()
+            it[MaintenanceRecordsTable.updatedAt] = Clock.System.now()
         }
         
         // Create maintenance items
@@ -96,7 +96,7 @@ class MaintenanceRepository {
             request.odoReading?.let { odoReading -> it[MaintenanceRecordsTable.odoReading] = odoReading }
             request.title?.let { title -> it[MaintenanceRecordsTable.title] = title }
             request.notes?.let { notes -> it[MaintenanceRecordsTable.notes] = notes }
-            it[updatedAt] = Clock.System.now()
+            it[MaintenanceRecordsTable.updatedAt] = Clock.System.now()
         }
         
         if (updated > 0) {
@@ -184,11 +184,11 @@ class MaintenanceRepository {
     private fun createMaintenanceItem(maintenanceId: String, request: CreateMaintenanceItemRequest): MaintenanceItem = transaction {
         val itemId = MaintenanceItemsTable.insertAndGetId {
             it[MaintenanceItemsTable.maintenanceId] = UUID.fromString(maintenanceId)
-            it[partId] = UUID.fromString(request.partId)
-            it[quantity] = request.quantity.toBigDecimal()
-            it[unit] = request.unit
-            it[unitPriceCentsOverride] = request.unitPriceCentsOverride
-            it[notes] = request.notes
+            it[MaintenanceItemsTable.partId] = UUID.fromString(request.partId)
+            it[MaintenanceItemsTable.quantity] = request.quantity.toBigDecimal()
+            it[MaintenanceItemsTable.unit] = request.unit
+            it[MaintenanceItemsTable.unitPriceCentsOverride] = request.unitPriceCentsOverride
+            it[MaintenanceItemsTable.notes] = request.notes
         }
         
         MaintenanceItem(

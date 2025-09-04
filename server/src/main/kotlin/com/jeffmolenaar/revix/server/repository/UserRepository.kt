@@ -28,7 +28,7 @@ class UserRepository {
             it[UsersTable.email] = email
             it[UsersTable.passwordHash] = passwordHash
             it[UsersTable.name] = name
-            it[createdAt] = Clock.System.now()
+            it[UsersTable.createdAt] = Clock.System.now()
         }
         
         User(
@@ -53,7 +53,7 @@ class RefreshTokenRepository {
             it[RefreshTokensTable.userId] = UUID.fromString(userId)
             it[RefreshTokensTable.tokenHash] = tokenHash
             it[RefreshTokensTable.expiresAt] = expiresAt
-            it[createdAt] = Clock.System.now()
+            it[RefreshTokensTable.createdAt] = Clock.System.now()
         }
     }
     
@@ -97,16 +97,16 @@ class VehicleRepository {
     fun create(ownerId: String, request: CreateVehicleRequest): Vehicle = transaction {
         val id = VehiclesTable.insertAndGetId {
             it[VehiclesTable.ownerId] = UUID.fromString(ownerId)
-            it[licensePlate] = request.licensePlate
-            it[vin] = request.vin
-            it[manufacturer] = request.manufacturer
-            it[model] = request.model
-            it[buildYear] = request.buildYear
-            it[fuelType] = request.fuelType
-            it[odoUnit] = request.odoUnit
-            it[currentOdo] = request.currentOdo
-            it[createdAt] = Clock.System.now()
-            it[updatedAt] = Clock.System.now()
+            it[VehiclesTable.licensePlate] = request.licensePlate
+            it[VehiclesTable.vin] = request.vin
+            it[VehiclesTable.manufacturer] = request.manufacturer
+            it[VehiclesTable.model] = request.model
+            it[VehiclesTable.buildYear] = request.buildYear
+            it[VehiclesTable.fuelType] = request.fuelType
+            it[VehiclesTable.odoUnit] = request.odoUnit
+            it[VehiclesTable.currentOdo] = request.currentOdo
+            it[VehiclesTable.createdAt] = Clock.System.now()
+            it[VehiclesTable.updatedAt] = Clock.System.now()
         }
         
         VehiclesTable.select { VehiclesTable.id eq id }
@@ -127,7 +127,7 @@ class VehicleRepository {
             request.fuelType?.let { fuelType -> it[VehiclesTable.fuelType] = fuelType }
             request.odoUnit?.let { odoUnit -> it[VehiclesTable.odoUnit] = odoUnit }
             request.currentOdo?.let { currentOdo -> it[VehiclesTable.currentOdo] = currentOdo }
-            it[updatedAt] = Clock.System.now()
+            it[VehiclesTable.updatedAt] = Clock.System.now()
         }
         
         if (updated > 0) {
