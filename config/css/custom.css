@@ -11,7 +11,12 @@
  * ========
  */
 
-/* Test comment to verify cache fix is working */
+/* Test comment to verify cache fix is working - if you see this, cache headers are working! */
+
+/* Testing: Make body background red to verify immediate CSS updates work */
+body {
+    background: linear-gradient(45deg, #ff000022, #00ff0022) !important;
+}
 
 /* Example 1: Change primary color to green */
 /*
