@@ -1,27 +1,94 @@
-/* Root Variables */
+/* Root Variables - Easy Customization */
 :root {
+    /* === COLORS === */
+    /* Primary theme colors */
     --primary-color: #2563eb;
     --primary-dark: #1d4ed8;
+    --primary-light: #3b82f6;
+    
+    /* Secondary and status colors */
     --secondary-color: #64748b;
     --success-color: #16a34a;
     --warning-color: #f59e0b;
     --error-color: #dc2626;
+    --info-color: #0ea5e9;
+    
+    /* Background and surface colors */
     --background-color: #f8fafc;
     --surface-color: #ffffff;
     --surface-hover: #f1f5f9;
+    --surface-selected: #e0f2fe;
+    
+    /* Text colors */
     --text-primary: #1e293b;
     --text-secondary: #64748b;
     --text-light: #94a3b8;
+    --text-muted: #cbd5e1;
+    
+    /* Border colors */
     --border-color: #e2e8f0;
     --border-dark: #cbd5e1;
+    --border-light: #f1f5f9;
+    
+    /* === SHADOWS === */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    
+    /* === BORDER RADIUS === */
     --radius-sm: 0.375rem;
     --radius-md: 0.5rem;
     --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    
+    /* === SPACING === */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    
+    /* === TYPOGRAPHY === */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 2rem;
+    
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    /* === ANIMATIONS === */
     --transition: all 0.3s ease;
+    --transition-fast: all 0.15s ease;
+    --transition-slow: all 0.5s ease;
+    
+    /* === LAYOUT === */
+    --header-height: 64px;
+    --sidebar-width: 250px;
+    --container-max-width: 1200px;
 }
+
+/* 
+ * THEME CUSTOMIZATION EXAMPLE:
+ * Copy this section and modify values to create custom themes
+ * 
+ * Dark theme example:
+ * :root[data-theme="dark"] {
+ *     --background-color: #0f172a;
+ *     --surface-color: #1e293b;
+ *     --surface-hover: #334155;
+ *     --text-primary: #f8fafc;
+ *     --text-secondary: #cbd5e1;
+ *     --border-color: #334155;
+ * }
+ */
 
 /* Reset and Base Styles */
 * {
@@ -548,6 +615,56 @@ body {
     background: var(--surface-hover);
     border-radius: var(--radius-sm);
     font-size: 0.875rem;
+}
+
+/* Maintenance Expand/Collapse */
+.maintenance-header {
+    cursor: pointer;
+    user-select: none;
+}
+
+.maintenance-title-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.maintenance-toggle-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+}
+
+.maintenance-toggle-btn:hover {
+    background: var(--surface-hover);
+    color: var(--text-primary);
+}
+
+.maintenance-toggle-btn i {
+    transition: transform 0.2s ease;
+}
+
+.maintenance-record.collapsed .maintenance-details,
+.maintenance-record.collapsed .maintenance-items {
+    display: none;
+}
+
+.maintenance-record.collapsed .maintenance-toggle-btn i {
+    transform: rotate(-90deg);
+}
+
+.maintenance-details,
+.maintenance-items {
+    transition: all 0.3s ease;
 }
 
 /* Filters and Search */

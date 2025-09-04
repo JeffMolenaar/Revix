@@ -674,6 +674,76 @@ async function deletePart(partId) {
     }
 }
 
+function editPart(partId) {
+    const part = appData.parts.find(p => p.id === partId);
+    if (!part) {
+        showToast('Part not found', 'error');
+        return;
+    }
+    showEditPartModal(part);
+}
+
+function showEditPartModal(part) {
+    const content = `
+        <div class="modal-header">
+            <h3>Edit Part</h3>
+            <button class="modal-close" onclick="hideModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="edit-part-form">
+                <div class="form-group">
+                    <label for="edit-part-name">Part Name *</label>
+                    <input type="text" id="edit-part-name" required value="${part.name}">
+                </div>
+                <div class="form-group">
+                    <label for="edit-part-description">Description</label>
+                    <textarea id="edit-part-description" rows="3">${part.description || ''}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="edit-part-url">Supplier URL</label>
+                    <input type="url" id="edit-part-url" value="${part.url || ''}">
+                </div>
+                <div class="form-group">
+                    <label for="edit-part-tags">Tags</label>
+                    <select id="edit-part-tags" multiple>
+                        ${appData.tags.map(tag => `<option value="${tag.id}" ${part.tags && part.tags.some(t => t.id === tag.id) ? 'selected' : ''}>${tag.name}</option>`).join('')}
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="hideModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="updatePart('${part.id}')">Update Part</button>
+        </div>
+    `;
+    showModal(content);
+}
+
+async function updatePart(partId) {
+    const partData = {
+        name: document.getElementById('edit-part-name').value,
+        description: document.getElementById('edit-part-description').value || null,
+        url: document.getElementById('edit-part-url').value || null,
+        tagIds: Array.from(document.getElementById('edit-part-tags').selectedOptions).map(option => option.value)
+    };
+    
+    try {
+        showLoading();
+        await apiCall(`/parts/${partId}`, {
+            method: 'PUT',
+            body: JSON.stringify(partData)
+        });
+        
+        hideModal();
+        loadParts();
+        showToast('Part updated successfully!');
+    } catch (error) {
+        showToast(error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
 // Tags Functions
 async function loadTags() {
     try {
@@ -791,6 +861,64 @@ async function deleteTag(tagId) {
     }
 }
 
+function editTag(tagId) {
+    const tag = appData.tags.find(t => t.id === tagId);
+    if (!tag) {
+        showToast('Tag not found', 'error');
+        return;
+    }
+    showEditTagModal(tag);
+}
+
+function showEditTagModal(tag) {
+    const content = `
+        <div class="modal-header">
+            <h3>Edit Tag</h3>
+            <button class="modal-close" onclick="hideModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <form id="edit-tag-form">
+                <div class="form-group">
+                    <label for="edit-tag-name">Tag Name *</label>
+                    <input type="text" id="edit-tag-name" required value="${tag.name}">
+                </div>
+                <div class="form-group">
+                    <label for="edit-tag-color">Color</label>
+                    <input type="color" id="edit-tag-color" value="${tag.color || '#2563eb'}">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" onclick="hideModal()">Cancel</button>
+            <button class="btn btn-primary" onclick="updateTag('${tag.id}')">Update Tag</button>
+        </div>
+    `;
+    showModal(content);
+}
+
+async function updateTag(tagId) {
+    const tagData = {
+        name: document.getElementById('edit-tag-name').value,
+        color: document.getElementById('edit-tag-color').value
+    };
+    
+    try {
+        showLoading();
+        await apiCall(`/tags/${tagId}`, {
+            method: 'PUT',
+            body: JSON.stringify(tagData)
+        });
+        
+        hideModal();
+        loadTags();
+        showToast('Tag updated successfully!');
+    } catch (error) {
+        showToast(error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
 // Maintenance Functions
 async function loadMaintenance() {
     try {
@@ -828,11 +956,16 @@ function renderMaintenance() {
     }
     
     container.innerHTML = appData.maintenance.map(record => `
-        <div class="maintenance-record">
-            <div class="maintenance-header">
-                <div class="maintenance-title">${record.title}</div>
+        <div class="maintenance-record" id="maintenance-${record.id}">
+            <div class="maintenance-header" onclick="toggleMaintenanceDetails('${record.id}')">
+                <div class="maintenance-title-container">
+                    <button class="maintenance-toggle-btn" title="Expand/Collapse">
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="maintenance-title">${record.title}</div>
+                </div>
                 <div class="maintenance-date">${formatDate(record.happenedAt)}</div>
-                <div class="maintenance-actions">
+                <div class="maintenance-actions" onclick="event.stopPropagation()">
                     <button class="btn btn-sm" onclick="editMaintenance('${record.id}')" title="Edit">
                         <i class="fas fa-edit"></i>
                     </button>
@@ -841,7 +974,7 @@ function renderMaintenance() {
                     </button>
                 </div>
             </div>
-            <div class="maintenance-details">
+            <div class="maintenance-details" id="details-${record.id}">
                 <div class="meta-item">
                     <i class="fas fa-car"></i>
                     ${record.vehicleName}
@@ -860,7 +993,7 @@ function renderMaintenance() {
                 ` : ''}
             </div>
             ${record.items && record.items.length > 0 ? `
-                <div class="maintenance-items">
+                <div class="maintenance-items" id="items-${record.id}">
                     <h4>Parts Used:</h4>
                     <div class="item-list">
                         ${record.items.map(item => `
@@ -874,6 +1007,31 @@ function renderMaintenance() {
             ` : ''}
         </div>
     `).join('');
+}
+
+function toggleMaintenanceDetails(recordId) {
+    const record = document.getElementById(`maintenance-${recordId}`);
+    const details = document.getElementById(`details-${recordId}`);
+    const items = document.getElementById(`items-${recordId}`);
+    const toggleBtn = record.querySelector('.maintenance-toggle-btn i');
+    
+    const isCollapsed = record.classList.contains('collapsed');
+    
+    if (isCollapsed) {
+        // Expand
+        record.classList.remove('collapsed');
+        details.style.display = 'grid';
+        if (items) items.style.display = 'block';
+        toggleBtn.classList.remove('fa-chevron-right');
+        toggleBtn.classList.add('fa-chevron-down');
+    } else {
+        // Collapse
+        record.classList.add('collapsed');
+        details.style.display = 'none';
+        if (items) items.style.display = 'none';
+        toggleBtn.classList.remove('fa-chevron-down');
+        toggleBtn.classList.add('fa-chevron-right');
+    }
 }
 
 function showAddMaintenanceModal() {
