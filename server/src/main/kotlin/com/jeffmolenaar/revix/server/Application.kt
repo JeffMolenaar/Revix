@@ -31,6 +31,7 @@ import java.io.File
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
+import org.koin.ktor.ext.inject
 import org.koin.logger.slf4jLogger
 
 fun main() {
