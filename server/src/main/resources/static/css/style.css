@@ -155,6 +155,13 @@ body {
     font-size: 1.75rem;
 }
 
+.custom-logo {
+    height: 40px;
+    width: auto;
+    max-height: 40px;
+    object-fit: contain;
+}
+
 .nav-menu {
     display: flex;
     align-items: center;
@@ -887,12 +894,50 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .nav-menu {
-        display: none;
+    .nav-container {
+        position: relative;
+    }
+    
+    /* Position user section on the left */
+    .nav-user {
+        order: 1;
+    }
+    
+    /* Center the logo absolutely in the mobile header */
+    .nav-brand {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        order: 2;
     }
     
     .nav-toggle {
+        order: 3;
         display: flex;
+        margin-left: auto;
+    }
+    
+    .nav-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--surface-color);
+        border-top: 1px solid var(--border-color);
+        box-shadow: var(--shadow-lg);
+        flex-direction: column;
+        padding: 1rem 0;
+        z-index: 1001;
+    }
+    
+    .nav-menu.nav-menu-active {
+        display: flex;
+    }
+    
+    .nav-menu .nav-link {
+        padding: 0.75rem 1rem;
+        border-radius: 0;
     }
     
     .main-content {

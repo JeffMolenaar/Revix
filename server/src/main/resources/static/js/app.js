@@ -1390,6 +1390,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
+    // Mobile menu toggle
+    const navToggle = document.getElementById('nav-toggle');
+    const navMenu = document.getElementById('nav-menu');
+    if (navToggle && navMenu) {
+        navToggle.addEventListener('click', function() {
+            navMenu.classList.toggle('nav-menu-active');
+        });
+    }
+    
     // Modal overlay click to close
     document.getElementById('modal-overlay').addEventListener('click', function(e) {
         if (e.target === this) {
