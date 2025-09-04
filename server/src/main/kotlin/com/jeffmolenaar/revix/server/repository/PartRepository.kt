@@ -41,10 +41,10 @@ class TagRepository {
         
         val id = TagsTable.insertAndGetId {
             it[TagsTable.ownerId] = UUID.fromString(ownerId)
-            it[name] = request.name
-            it[color] = request.color
+            it[TagsTable.name] = request.name
+            it[TagsTable.color] = request.color
             it[TagsTable.slug] = slug
-            it[createdAt] = Clock.System.now()
+            it[TagsTable.createdAt] = Clock.System.now()
         }
         
         Tag(
@@ -166,13 +166,13 @@ class PartRepository {
     fun create(ownerId: String, request: CreatePartRequest): Part = transaction {
         val partId = PartsTable.insertAndGetId {
             it[PartsTable.ownerId] = UUID.fromString(ownerId)
-            it[name] = request.name
-            it[description] = request.description
-            it[priceCents] = request.priceCents
-            it[currency] = request.currency
-            it[url] = request.url
-            it[createdAt] = Clock.System.now()
-            it[updatedAt] = Clock.System.now()
+            it[PartsTable.name] = request.name
+            it[PartsTable.description] = request.description
+            it[PartsTable.priceCents] = request.priceCents
+            it[PartsTable.currency] = request.currency
+            it[PartsTable.url] = request.url
+            it[PartsTable.createdAt] = Clock.System.now()
+            it[PartsTable.updatedAt] = Clock.System.now()
         }
         
         // Add tag associations
@@ -196,7 +196,7 @@ class PartRepository {
             request.priceCents?.let { priceCents -> it[PartsTable.priceCents] = priceCents }
             request.currency?.let { currency -> it[PartsTable.currency] = currency }
             request.url?.let { url -> it[PartsTable.url] = url }
-            it[updatedAt] = Clock.System.now()
+            it[PartsTable.updatedAt] = Clock.System.now()
         }
         
         if (updated > 0) {
