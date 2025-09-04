@@ -40,17 +40,18 @@ vim config/css/custom.css
 
 After editing the CSS file:
 
-1. **Docker**: Restart the Revix container
+**Changes are applied immediately!** Simply refresh your browser to see the changes.
+
+1. **Docker**: No restart needed - just refresh your browser
    ```bash
-   cd deploy/docker
-   docker compose restart revix
+   # Changes to config/css/custom.css are served directly from the filesystem
+   # Just press Ctrl+F5 or Cmd+Shift+R to see your changes
    ```
 
-2. **Manual Installation**: Restart the Revix server
+2. **Manual Installation**: No restart needed - just refresh your browser
    ```bash
-   # Stop the server (Ctrl+C if running in terminal)
-   # Then restart it
-   ./server/build/install/server/bin/server
+   # Changes to config/css/custom.css are applied immediately
+   # Just press Ctrl+F5 or Cmd+Shift+R to see your changes
    ```
 
 ## CSS Variables Reference
@@ -237,7 +238,7 @@ body {
 
 1. **Clear browser cache**: Press Ctrl+F5 (or Cmd+Shift+R on Mac)
 2. **Check file permissions**: Ensure the CSS file is readable
-3. **Restart server**: Always restart Revix after making changes
+3. **Check file exists**: Verify `config/css/custom.css` exists and changes are saved
 4. **Check syntax**: Ensure your CSS is valid (no syntax errors)
 
 ### CSS Not Loading
