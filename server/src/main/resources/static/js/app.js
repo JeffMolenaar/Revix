@@ -73,12 +73,25 @@ async function apiCall(endpoint, options = {}) {
     
     try {
         const response = await fetch(url, config);
-        const data = await response.json();
         
         if (!response.ok) {
-            throw new Error(data.message || 'API request failed');
+            // Try to parse error message if there's content
+            let errorMessage = 'API request failed';
+            try {
+                const errorData = await response.json();
+                errorMessage = errorData.message || errorMessage;
+            } catch {
+                // If parsing fails, use default message
+            }
+            throw new Error(errorMessage);
         }
         
+        // Handle responses with no content (like 204 No Content)
+        if (response.status === 204 || !response.headers.get('content-type')?.includes('application/json')) {
+            return null;
+        }
+        
+        const data = await response.json();
         return data;
     } catch (error) {
         console.error('API Error:', error);
@@ -600,18 +613,6 @@ function showAddPartModal() {
                     <textarea id="part-description" rows="3"></textarea>
                 </div>
                 <div class="form-group">
-                    <label for="part-price">Price *</label>
-                    <input type="number" id="part-price" step="0.01" min="0" required>
-                </div>
-                <div class="form-group">
-                    <label for="part-currency">Currency</label>
-                    <select id="part-currency">
-                        <option value="EUR">EUR</option>
-                        <option value="USD">USD</option>
-                        <option value="GBP">GBP</option>
-                    </select>
-                </div>
-                <div class="form-group">
                     <label for="part-url">Supplier URL</label>
                     <input type="url" id="part-url">
                 </div>
@@ -635,8 +636,6 @@ async function addPart() {
     const partData = {
         name: document.getElementById('part-name').value,
         description: document.getElementById('part-description').value || null,
-        priceCents: Math.round(parseFloat(document.getElementById('part-price').value) * 100),
-        currency: document.getElementById('part-currency').value,
         url: document.getElementById('part-url').value || null,
         tagIds: Array.from(document.getElementById('part-tags').selectedOptions).map(option => option.value)
     };

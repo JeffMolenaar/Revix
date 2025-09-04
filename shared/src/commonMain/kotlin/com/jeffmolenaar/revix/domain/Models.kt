@@ -110,8 +110,8 @@ data class Part(
     val ownerId: String,
     val name: String,
     val description: String? = null,
-    val priceCents: Long,
-    val currency: String = "EUR",
+    val priceCents: Long? = null,
+    val currency: String? = null,
     val url: String? = null,
     val tags: List<Tag> = emptyList(),
     val createdAt: Instant,
@@ -122,8 +122,8 @@ data class Part(
 data class CreatePartRequest(
     val name: String,
     val description: String? = null,
-    val priceCents: Long,
-    val currency: String = "EUR",
+    val priceCents: Long? = null,
+    val currency: String? = null,
     val url: String? = null,
     val tagIds: List<String> = emptyList()
 )

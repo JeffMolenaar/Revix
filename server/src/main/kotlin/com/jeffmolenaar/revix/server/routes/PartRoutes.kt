@@ -151,10 +151,10 @@ fun Route.partRoutes() {
             val request = call.receive<CreatePartRequest>()
             
             // Validate input
-            val validationResults = listOf(
+            val validationResults = listOfNotNull(
                 ValidationRules.validatePartName(request.name),
-                ValidationRules.validatePriceCents(request.priceCents),
-                ValidationRules.validateCurrency(request.currency)
+                request.priceCents?.let { ValidationRules.validatePriceCents(it) },
+                request.currency?.let { ValidationRules.validateCurrency(it) }
             )
             
             val validationResult = validationResults.combine()
