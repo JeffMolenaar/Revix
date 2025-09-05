@@ -10,6 +10,7 @@ Revix is a comprehensive, self-hosted platform for tracking vehicle maintenance 
 - **Tag System**: Categorize and filter parts using a flexible tagging system
 - **Odometer Tracking**: Support for both kilometers and engine hours
 - **Multi-user Support**: Secure, per-user data isolation with JWT authentication
+- **Database Import/Export**: SSH-accessible scripts for database backup and migration
 - **Customizable Interface**: Easy CSS customization via external files (editable via SSH/filesystem)
 - **REST API**: Complete RESTful API for all operations
 - **Self-hosted**: Run on your own infrastructure with Docker
@@ -254,13 +255,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Desktop app (Compose Multiplatform)
 - [ ] Maintenance reminders and scheduling
 - [ ] Image upload for receipts and parts
-- [ ] Import/export functionality
+- [x] Import/export functionality (SSH-accessible database scripts)
 - [ ] Reporting and analytics dashboard
 - [ ] Multi-language support
 
 ## 📞 Support
 
 - 📖 [Installation Guide](docs/INSTALL.md)
+- 🔧 [SSH Database Management](docs/SSH-DATABASE-GUIDE.md)
+- 📋 [Database Scripts](scripts/README.md)
 - 🐛 [Issue Tracker](https://github.com/JeffMolenaar/Revix/issues)
 - 💬 [Discussions](https://github.com/JeffMolenaar/Revix/discussions)
 

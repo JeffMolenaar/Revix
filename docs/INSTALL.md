@@ -141,15 +141,113 @@ Migrations run automatically on startup using Flyway.
 
 ## Backup and Restore
 
-### Database Backup
-```bash
-docker-compose exec db pg_dump -U revix revix > backup.sql
-```
+Revix provides comprehensive database import/export functionality that works both locally and via SSH connections.
 
-### Database Restore
+### Quick Backup and Restore (Docker)
 ```bash
+# Quick backup
+docker-compose exec db pg_dump -U revix revix > backup.sql
+
+# Quick restore
 docker-compose exec -T db psql -U revix revix < backup.sql
 ```
+
+### SSH-Accessible Database Management
+
+For remote management via SSH (e.g., using PuTTY), use the dedicated scripts:
+
+#### Database Export via SSH
+```bash
+# Basic export
+./scripts/db-export.sh
+
+# Export to specific file
+./scripts/db-export.sh -f my_backup.sql
+
+# Export and compress
+./scripts/db-export.sh -c -f backup.sql
+
+# Schema only export
+./scripts/db-export.sh --schema-only -f schema.sql
+
+# Export to custom directory
+./scripts/db-export.sh -d /path/to/backups -f backup.sql
+```
+
+#### Database Import via SSH
+```bash
+# Basic import (with confirmation prompt)
+./scripts/db-import.sh backup.sql
+
+# Import compressed file
+./scripts/db-import.sh backup.sql.gz
+
+# Clean import (removes existing data)
+./scripts/db-import.sh --clean backup.sql
+
+# Skip confirmation prompt (use with caution)
+./scripts/db-import.sh --confirm backup.sql
+```
+
+### Direct PostgreSQL Connection
+
+For environments without Docker, you can use direct PostgreSQL connections:
+
+```bash
+# Set environment variables
+export REVIX_DB_HOST=localhost
+export REVIX_DB_PORT=5432
+export REVIX_DB_NAME=revix
+export REVIX_DB_USER=revix
+export REVIX_DB_PASS=your_password
+
+# Export using direct connection
+./scripts/db-export.sh --direct
+
+# Import using direct connection
+./scripts/db-import.sh --direct backup.sql
+```
+
+### SSH Connection Examples
+
+#### Using PuTTY or SSH Terminal
+```bash
+# Connect to your server
+ssh user@your-server.com
+
+# Navigate to Revix directory
+cd /path/to/Revix
+
+# Export database
+./scripts/db-export.sh -c -f "backup_$(date +%Y%m%d).sql"
+
+# Download the backup file using SCP
+# (run this from your local machine)
+scp user@your-server.com:/path/to/Revix/backups/backup_20240905.sql.gz ./
+
+# Upload and import a backup file
+# (upload file first, then import)
+scp ./my_backup.sql user@your-server.com:/path/to/Revix/backups/
+ssh user@your-server.com
+cd /path/to/Revix
+./scripts/db-import.sh backups/my_backup.sql
+```
+
+### Important Security Notes
+
+- **Backup Files**: Keep backup files secure and delete when no longer needed
+- **SSH Access**: Ensure proper SSH key authentication and firewall rules
+- **Database Passwords**: Use strong passwords and secure environment variables
+- **File Permissions**: Backup files may contain sensitive data - set appropriate permissions
+- **Clean Imports**: The `--clean` option will delete ALL existing data - use with extreme caution
+
+### Script Features
+
+- **Auto-backup**: Import script automatically creates a backup before importing
+- **Compression**: Support for gzip-compressed SQL files
+- **Validation**: File format validation and database connectivity checks
+- **Error Handling**: Comprehensive error checking and user confirmations
+- **Flexible Output**: Customizable backup locations and filenames
 
 ## Troubleshooting
 
