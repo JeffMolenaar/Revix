@@ -72,17 +72,14 @@ body {
 /*
 .custom-logo {
     display: block !important;
+    background-image: url('/static/images/your-logo.png');
     height: 40px;
-    width: auto;
+    width: 120px;
     max-width: 150px;
 }
 
 .default-logo-icon,
 .default-logo-text {
-    display: none !important;
-}
-
-.custom-logo[src=""] {
     display: none !important;
 }
 */
