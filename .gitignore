@@ -48,3 +48,8 @@ kotlin-js-store/
 *.db
 *.sqlite
 *.sqlite3
+
+# Database backups (contains sensitive data)
+backups/
+*.sql
+*.sql.gz
