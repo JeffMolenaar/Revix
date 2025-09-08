@@ -2,6 +2,8 @@
 
 This guide shows how to integrate the Revix Kotlin client library into your Android project.
 
+> 📋 **For detailed JAR generation instructions and usage examples, see [README-JAR.md](README-JAR.md)**
+
 ## Step 1: Add the Revix Library to Your Android Project
 
 ### Option A: Local Module Dependency (Recommended for Development)
@@ -25,9 +27,21 @@ dependencies {
 
 ### Option B: JAR File Dependency
 
-1. Build the shared module:
+1. Build the shared module using one of these methods:
+
+**Windows:**
+```batch
+build-jar.bat
+```
+
+**Linux/macOS:**
 ```bash
-./gradlew :shared:build
+./build-jar.sh
+```
+
+**Manual (all platforms):**
+```bash
+./gradlew :shared:build :shared:jvmSourcesJar
 ```
 
 2. Copy the generated JAR from `shared/build/libs/shared-jvm-1.0.0.jar` to your Android project's `libs` folder
