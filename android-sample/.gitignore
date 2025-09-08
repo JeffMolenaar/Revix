@@ -1,0 +1,18 @@
+# Android sample build artifacts
+build/
+.gradle/
+
+# Android Studio files
+.idea/
+*.iml
+local.properties
+
+# Generated files
+.classpath
+.project
+.settings/
+bin/
+
+# OS generated files
+.DS_Store
+Thumbs.db

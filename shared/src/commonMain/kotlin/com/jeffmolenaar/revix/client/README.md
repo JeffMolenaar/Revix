@@ -2,6 +2,12 @@
 
 Een eenvoudige Kotlin client voor de Revix API waarmee je gemakkelijk kunt aanmelden, afmelden en data kunt toevoegen, wijzigen en verwijderen.
 
+## Platform Support
+
+Deze client ondersteunt:
+- **JVM** (desktop, server applicaties)
+- **Android** (mobiele apps) - Zie [Android Integration Guide](../../../../../ANDROID_INTEGRATION.md)
+
 ## Installatie
 
 Voeg de `shared` module toe aan je project afhankelijkheden in `build.gradle.kts`:
@@ -306,4 +312,17 @@ De client ondersteunt alle beschikbare Revix API endpoints:
 - `POST /api/v1/vehicles/{vehicleId}/maintenance` - Onderhoudsrecord toevoegen
 - `GET /api/v1/maintenance/{id}` - Onderhoudsrecord ophalen
 - `PUT /api/v1/maintenance/{id}` - Onderhoudsrecord wijzigen
+- `DELETE /api/v1/maintenance/{id}` - Onderhoudsrecord verwijderen
+
+## Android Development
+
+Voor Android ontwikkeling, zie de uitgebreide [Android Integration Guide](../../../../../ANDROID_INTEGRATION.md) voor:
+- **Installatie instructies** voor Android Studio
+- **Complete voorbeelden** met Jetpack Compose
+- **ViewModel integratie** 
+- **Foutafhandeling** voor mobiele apps
+- **Network configuratie** voor emulator en fysieke apparaten
+- **Complete werkende Android app** als referentie
+
+De Revix client is volledig compatibel met Android en gebruikt OkHttp als HTTP client voor optimale prestaties op mobiele apparaten.
 - `DELETE /api/v1/maintenance/{id}` - Onderhoudsrecord verwijderen

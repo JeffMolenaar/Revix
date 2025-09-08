@@ -51,18 +51,7 @@ data class RevixClientConfig(
                 }
             }
         } else {
-            HttpClient {
-                install(ContentNegotiation) {
-                    json(this@RevixClientConfig.json)
-                }
-                
-                if (enableLogging) {
-                    install(Logging) {
-                        logger = Logger.DEFAULT
-                        level = LogLevel.INFO
-                    }
-                }
-            }
+            createPlatformHttpClient(this)
         }
     }
 }
