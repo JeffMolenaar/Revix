@@ -28,3 +28,30 @@ kotlin {
         }
     }
 }
+
+// Generate sources JAR
+kotlin.jvm().withJava()
+
+// Optional: Create a fat JAR with all dependencies included
+// Uncomment and run './gradlew :shared:fatJar' to generate a standalone JAR
+/*
+tasks.register<Jar>("fatJar") {
+    group = "build"
+    description = "Create a JAR with all dependencies included"
+    archiveClassifier.set("fat")
+    
+    from(kotlin.jvm().compilations.getByName("main").output)
+    
+    dependsOn(configurations.named("jvmRuntimeClasspath"))
+    from({
+        configurations.named("jvmRuntimeClasspath").get().filter { 
+            it.name.endsWith("jar") 
+        }.map { zipTree(it) }
+    })
+    
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    
+    // Exclude signature files that can cause issues
+    exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA")
+}
+*/
